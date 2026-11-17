@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AgroFence · Protección inteligente de cultivos con PLC</title>
+<meta name="description" content="Sistema automatizado basado en PLC para la detección y alerta de intrusión de animales en zonas agrícolas.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f8fc;--card:#fff;--tx:#0f1b3a;--mut:#58668a;--bd:#e1e7f2;--pri:#0b2a6b;--acc:#1d5fe0;--cy:#22d3ee;--g:#1f9d63;--o:#e0780f;--r:#d32f2f;--sh:0 1px 2px rgba(15,27,58,.05),0 8px 24px rgba(15,27,58,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1122;--card:#121c36;--tx:#e9eefb;--mut:#9aa9cb;--bd:#233057;--pri:#8fb0ff;--acc:#6f9bff;--g:#4cc38a;--o:#f0963d;--r:#ef6a6a;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}}
+:root[data-theme="dark"]{--bg:#0a1122;--card:#121c36;--tx:#e9eefb;--mut:#9aa9cb;--bd:#233057;--pri:#8fb0ff;--acc:#6f9bff;--g:#4cc38a;--o:#f0963d;--r:#ef6a6a;--sh:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.6;padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.nav{position:sticky;top:0;z-index:20;background:rgba(7,18,48,.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding-top:env(safe-area-inset-top,0px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;height:60px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;letter-spacing:1.5px;text-decoration:none}
+.logo svg{width:26px;height:26px}
+.links a{color:#c9d5f5;text-decoration:none;font-size:14px;font-weight:600;margin-left:22px}.links a:hover{color:#fff}
+.links .cta{background:var(--cy);color:#04223a;padding:8px 16px;border-radius:99px}.links .cta:hover{color:#04223a;filter:brightness(1.08)}
+@media(max-width:700px){.links a:not(.cta){display:none}}
+.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(180deg,#0b2a6b 0%,#1b64a8 42%,#f2a65a 76%,#ffd9a0 100%)}
+.field{position:absolute;inset:0;width:100%;height:100%}
+.hero .wrap{position:relative;z-index:1}
+.hero h1,.hero p.l{text-shadow:0 2px 14px rgba(7,18,48,.35)}
+.hg{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding:64px 0 56px}
+@media(max-width:800px){.hg{grid-template-columns:1fr;padding:40px 0}.radar{max-width:320px;margin:0 auto}}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);border-radius:99px;padding:6px 14px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--cy);box-shadow:0 0 0 0 var(--cy);animation:pu 1.8s infinite}@keyframes pu{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.hero h1{font-size:clamp(38px,7vw,64px);line-height:1.05;margin:18px 0 14px;font-weight:800;letter-spacing:-1px}
+.hero h1 span{background:linear-gradient(90deg,#7ee7ff,#9db8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.l{font-size:18px;color:#cdd8f6;max-width:540px;margin:0 0 26px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:12px;padding:13px 22px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;margin:0 10px 10px 0;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}.b1{background:#fff;color:#0b2a6b}.b2{background:rgba(7,18,48,.35);color:#fff;border:1px solid rgba(255,255,255,.35)}.b3{background:var(--acc);color:#fff}
+.radar svg{width:100%;height:auto;filter:drop-shadow(0 0 30px rgba(34,211,238,.25))}
+.sweep{transform-origin:200px 200px;animation:sw 4s linear infinite}@keyframes sw{to{transform:rotate(360deg)}}
+.blip{animation:bp 4s infinite}@keyframes bp{0%,60%{opacity:0}70%{opacity:1}100%{opacity:0}}
+.stats{position:relative;border-top:1px solid rgba(255,255,255,.18);background:rgba(10,60,35,.35);display:grid;grid-template-columns:repeat(4,1fr);text-align:center;padding:22px 0}
+.stats b{display:block;font-size:28px;font-weight:800}.stats small{color:#a9bbea;font-size:13px}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr);gap:14px}}
+section{padding:72px 0}
+.eb{color:var(--acc);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+section h2{font-size:clamp(26px,4vw,36px);margin:6px 0 10px;letter-spacing:-.5px;line-height:1.15}
+.lead{color:var(--mut);margin:0 0 30px;max-width:660px;font-size:17px}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:22px;box-shadow:var(--sh)}
+.card h3{margin:14px 0 6px;font-size:18px}.card p{margin:0;color:var(--mut);font-size:15px}
+.ic{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--acc),var(--cy));display:flex;align-items:center;justify-content:center;color:#fff}
+.ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.arch{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:center;margin-bottom:30px}
+.arch .card{text-align:center;padding:18px}.arch .card.pl{background:linear-gradient(135deg,#0b2a6b,#1d5fe0);color:#fff;border:0}.arch .card.pl p{color:#cdd8f6}
+.arch .ar{font-size:24px;color:var(--mut)}
+@media(max-width:700px){.arch{grid-template-columns:1fr}.arch .ar{transform:rotate(90deg);text-align:center}}
+.steps{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:18px}
+.step{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;font-size:14px;color:var(--mut);transition:.3s}
+.step b{display:flex;width:28px;height:28px;border-radius:50%;background:var(--bd);color:var(--tx);align-items:center;justify-content:center;margin-bottom:8px;font-size:13px}
+.step.on{border-color:var(--acc);color:var(--tx);box-shadow:0 0 0 3px rgba(29,95,224,.18)}.step.on b{background:var(--acc);color:#fff}
+.demo{padding:0;overflow:hidden}.demo svg{width:100%;height:auto;display:block;background:linear-gradient(180deg,rgba(29,95,224,.05),transparent)}
+.dbar{padding:16px 22px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.fz{fill:none;stroke-width:3}.zo{stroke:var(--o);stroke-dasharray:8 6}.zr{stroke:var(--r);fill:rgba(31,157,99,.1)}
+.leds{display:flex;flex-wrap:wrap;gap:14px}.led{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;opacity:.3;transition:.3s}.led i{width:14px;height:14px;border-radius:50%;display:inline-block}.led.on{opacity:1}
+.blink{animation:bl .5s infinite alternate}@keyframes bl{to{opacity:.3}}
+.dstat{font-weight:700;padding:14px 22px 0}
+.lv{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:30px}
+.lv .card{border-top:4px solid}.lv .card b{font-size:13px;letter-spacing:1px;text-transform:uppercase}
+.chips span{display:inline-block;background:var(--card);border:1px solid var(--bd);border-radius:99px;padding:8px 16px;font-size:14px;font-weight:600;margin:0 8px 8px 0}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:var(--g);letter-spacing:1px}.live i{width:8px;height:8px;border-radius:50%;background:var(--g);animation:pu 1.8s infinite}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.bar button{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:10px 16px;border-radius:10px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}.bar button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.kg{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:16px}
+.kg .card{padding:18px}.big{font-size:30px;font-weight:800;letter-spacing:-.5px}
+h4{margin:0 0 10px;font-size:13px;color:var(--mut);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge{display:inline-block;padding:5px 14px;border-radius:99px;color:#fff;font-weight:800;font-size:15px}
+.two{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin:16px 0}.ch{position:relative;height:240px}
+#log{max-height:190px;overflow:auto;font-size:13px;margin:0;padding:0;list-style:none}#log li{padding:7px 0;border-bottom:1px solid var(--bd)}
+.sub{color:var(--mut);font-size:13px}
+input,textarea{width:100%;padding:12px 14px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;margin-bottom:12px}
+input:focus,textarea:focus{outline:2px solid var(--acc);border-color:transparent}
+.team{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.pp{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--cy));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex:none}
+footer{background:#071230;color:#a9bbea;padding:34px 0;font-size:14px}footer .wrap{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between}footer b{color:#fff}
+.js .rv{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}.js .rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.sweep,.blip,.dot,.live i{animation:none}.js .rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<script>document.documentElement.className='js'</script>
+<header class="nav"><div class="wrap">
+<a class="logo" href="#top"><svg viewBox="0 0 32 32" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"><path d="M16 28V12M16 12c0-5 3-8 8-8 0 5-3 8-8 8zM16 18c0-4-3-6-8-6 0 4 3 6 8 6z"/></svg>AGROFENCE</a>
+<nav class="links"><a href="#para-que">Propósito</a><a href="#funcionamiento">Funcionamiento</a><a href="#panel">Panel</a><a class="cta" href="#contacto">Contacto</a></nav>
+</div></header>
+
+<header class="hero" id="top"><svg class="field" viewBox="0 0 1440 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+<defs><radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c4"/><stop offset=".35" stop-color="#ffd27a" stop-opacity=".9"/><stop offset="1" stop-color="#ffb35c" stop-opacity="0"/></radialGradient>
+<clipPath id="nh"><path d="M0 540C300 500 600 530 900 520S1300 500 1440 520V600H0Z"/></clipPath></defs>
+<circle cx="720" cy="430" r="210" fill="url(#sun)"/><circle cx="720" cy="440" r="64" fill="#fff0b8"/>
+<g fill="#fff" opacity=".22"><ellipse cx="220" cy="150" rx="90" ry="16"/><ellipse cx="290" cy="138" rx="60" ry="14"/><ellipse cx="1180" cy="110" rx="110" ry="18"/><ellipse cx="1090" cy="124" rx="60" ry="12"/></g>
+<path d="M0 430C200 380 380 400 560 420S960 380 1200 410S1400 400 1440 390V600H0Z" fill="#3b8f86" opacity=".95"/>
+<path d="M0 480C240 430 460 470 700 470S1150 430 1440 470V600H0Z" fill="#2f9a5d"/>
+<path d="M0 540C300 500 600 530 900 520S1300 500 1440 520V600H0Z" fill="#1b6b3f"/>
+<g clip-path="url(#nh)" stroke="#4fbf7a" stroke-width="3" fill="none" opacity=".55"><path d="M-300 600L261 522"/><path d="M-190 600L310 522"/><path d="M-80 600L360 522"/><path d="M30 600L409 522"/><path d="M140 600L459 522"/><path d="M250 600L508 522"/><path d="M360 600L558 522"/><path d="M470 600L607 522"/><path d="M580 600L657 522"/><path d="M690 600L706 522"/><path d="M800 600L756 522"/><path d="M910 600L805 522"/><path d="M1020 600L855 522"/><path d="M1130 600L904 522"/><path d="M1240 600L954 522"/><path d="M1350 600L1003 522"/><path d="M1460 600L1053 522"/><path d="M1570 600L1102 522"/><path d="M1680 600L1152 522"/><path d="M1790 600L1201 522"/><path d="M0 548 Q720 540 1440 548"/><path d="M0 566 Q720 558 1440 566"/><path d="M0 586 Q720 578 1440 586"/></g>
+</svg><div class="wrap">
+<div class="hg">
+<div>
+<span class="pill"><span class="dot"></span>PROYECTO DE INGENIERÍA MECATRÓNICA · UMB</span>
+<h1>Protección de cultivos <span>automatizada con PLC</span></h1>
+<p class="l">AgroFence detecta la aproximación de animales a zonas agrícolas y activa alertas por niveles, sin causarles daño y sin vigilancia humana permanente.</p>
+<a class="btn b1" href="#funcionamiento" onclick="setTimeout(playDemo,600)">▶ Ver funcionamiento</a><a class="btn b2" href="#panel">Panel en vivo</a>
+</div>
+<div class="radar"><svg viewBox="0 0 400 400" aria-hidden="true">
+<defs><radialGradient id="sg" cx="0" cy="0" r="1"><stop offset="0" stop-color="#22d3ee" stop-opacity=".55"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/></radialGradient></defs>
+<circle cx="200" cy="200" r="190" fill="rgba(255,255,255,.03)" stroke="rgba(255,255,255,.25)"/><circle cx="200" cy="200" r="130" fill="none" stroke="#f0963d" stroke-dasharray="6 6" stroke-width="2"/><circle cx="200" cy="200" r="70" fill="rgba(239,106,106,.12)" stroke="#ef6a6a" stroke-width="2"/>
+<path d="M10 200H390M200 10V390" stroke="rgba(255,255,255,.12)"/>
+<g class="sweep"><path d="M200 200L390 200A190 190 0 0 0 330 66Z" fill="url(#sg)" transform="rotate(-30 200 200)"/><line x1="200" y1="200" x2="390" y2="200" stroke="#22d3ee" stroke-width="2"/></g>
+<rect x="176" y="188" width="48" height="24" rx="6" fill="#fff"/><text x="200" y="205" text-anchor="middle" font-size="12" font-weight="800" fill="#0b2a6b">PLC</text>
+<circle class="blip" cx="300" cy="120" r="7" fill="#f0963d"/><circle class="blip" cx="130" cy="290" r="7" fill="#ef6a6a" style="animation-delay:1.5s"/>
+<text x="200" y="76" text-anchor="middle" font-size="11" fill="#9db8ff">NIVEL 1</text><text x="200" y="136" text-anchor="middle" font-size="11" fill="#ff9d9d">NIVEL 2</text>
+</svg></div>
+</div>
+<div class="stats"><div><b>3</b><small>niveles de alerta</small></div><div><b>2</b><small>sensores (US + PIR)</small></div><div><b>30</b><small>pruebas planificadas</small></div><div><b>6</b><small>semanas de desarrollo</small></div></div>
+</div></header>
+
+<main>
+<section id="para-que"><div class="wrap">
+<div class="rv"><span class="eb">Propósito</span><h2>¿Para qué sirve AgroFence?</h2>
+<p class="lead">La entrada de animales a los cultivos causa daños y pérdidas, y la vigilancia manual no responde a cada evento. AgroFence automatiza la vigilancia del perímetro.</p></div>
+<div class="grid">
+<div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="M12 12l6-6"/></svg></div><h3>Detección temprana</h3><p>Sensores ultrasónico y PIR identifican la aproximación antes de que el animal entre al área cultivada.</p></div>
+<div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg></div><h3>Alertas por niveles</h3><p>Zona segura, advertencia visual e intrusión con alarma sonora y notificación local.</p></div>
+<div class="card rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Protege sin dañar</h3><p>Solo detecta y alerta. Respeta la Ley 1774 de 2016 y los lineamientos del RETIE.</p></div>
+</div></div></section>
+
+<section id="funcionamiento" style="background:var(--card);border-block:1px solid var(--bd)"><div class="wrap">
+<div class="rv"><span class="eb">Funcionamiento</span><h2>Cómo funciona</h2>
+<p class="lead">El PLC recibe las señales de los sensores, decide el nivel de alerta y activa las salidas correspondientes.</p></div>
+<div class="arch rv">
+<div class="card"><h3 style="margin-top:0">Entradas</h3><p>Sensor ultrasónico<br>Sensor PIR</p></div><div class="ar">→</div>
+<div class="card pl"><h3 style="margin-top:0">PLC</h3><p>Lógica de niveles</p></div><div class="ar">→</div>
+<div class="card"><h3 style="margin-top:0">Salidas</h3><p>LED · Buzzer · Pantalla</p></div>
+</div>
+<div class="steps" id="steps">
+<div class="step"><b>1</b>El animal se aproxima a la zona delimitada.</div>
+<div class="step"><b>2</b>Los sensores detectan presencia y distancia.</div>
+<div class="step"><b>3</b>El PLC evalúa la señal y define el nivel.</div>
+<div class="step"><b>4</b>Nivel 1: señal visual. Nivel 2: alarma sonora.</div>
+<div class="step"><b>5</b>Se notifica al responsable localmente.</div>
+</div>
+<div class="card demo rv">
+<svg viewBox="0 0 620 300" role="img" aria-label="Demostración animada de AgroFence">
+<rect class="fz zo" x="20" y="20" width="580" height="260" rx="14"/>
+<rect class="fz zr" x="100" y="70" width="410" height="160"/>
+<g fill="var(--pri)"><circle cx="100" cy="70" r="7"/><circle cx="510" cy="70" r="7"/><circle cx="100" cy="230" r="7"/><circle cx="510" cy="230" r="7"/></g>
+<g fill="var(--g)"><circle cx="160" cy="110" r="8"/><circle cx="240" cy="110" r="8"/><circle cx="320" cy="110" r="8"/><circle cx="400" cy="110" r="8"/><circle cx="160" cy="150" r="8"/><circle cx="240" cy="150" r="8"/><circle cx="320" cy="150" r="8"/><circle cx="400" cy="150" r="8"/></g>
+<rect x="260" y="185" width="70" height="30" rx="6" fill="var(--pri)"/><text x="295" y="205" text-anchor="middle" font-size="14" font-weight="700" fill="var(--bg)">PLC</text>
+<text x="32" y="42" font-size="12" font-weight="700" fill="var(--o)">Nivel 1 · Advertencia</text><text x="112" y="92" font-size="12" font-weight="700" fill="var(--r)">Nivel 2 · Intrusión</text>
+<ellipse id="an" cx="640" cy="150" rx="24" ry="14" fill="#8a5a2b"/><circle id="an2" cx="620" cy="142" r="8" fill="#8a5a2b"/>
+</svg>
+<div class="dstat" id="dtx">Pulsa “Reproducir” para iniciar la demostración</div>
+<div class="dbar">
+<div class="leds"><span class="led" id="l0"><i style="background:var(--g)"></i>Nivel 0</span><span class="led" id="l1"><i style="background:var(--o)"></i>Nivel 1 · LED</span><span class="led" id="l2"><i style="background:var(--r)"></i>Nivel 2 · LED</span><span class="led" id="bz">🔊 Buzzer</span></div>
+<button class="btn b3" style="margin:0" onclick="playDemo()">▶ Reproducir demostración</button>
+</div></div>
+<div class="lv">
+<div class="card rv" style="border-top-color:var(--g)"><b style="color:var(--g)">Nivel 0</b><h3 style="margin-top:6px">Zona segura</h3><p>Sin condición de intrusión. El sistema monitorea.</p></div>
+<div class="card rv" style="border-top-color:var(--o)"><b style="color:var(--o)">Nivel 1</b><h3 style="margin-top:6px">Advertencia</h3><p>Aproximación detectada. Se activa la señal visual.</p></div>
+<div class="card rv" style="border-top-color:var(--r)"><b style="color:var(--r)">Nivel 2</b><h3 style="margin-top:6px">Intrusión</h3><p>Se supera el límite. Alarma sonora y notificación local.</p></div>
+</div>
+<div style="margin-top:28px" class="chips"><span>Sensor ultrasónico</span><span>Sensor PIR</span><span>PLC compacto</span><span>Buzzer / sirena</span><span>LED y pantalla</span></div>
+</div></section>
+
+<section id="panel"><div class="wrap">
+<div class="rv"><span class="eb">Monitoreo</span><h2>Panel de datos <span class="live" id="liveTag"><i></i>EN VIVO</span></h2>
+<p class="lead">Gráficas del sistema en tiempo real o con los resultados de las pruebas. Por ahora los datos son simulados.</p></div>
+<div class="bar"><button id="mLive" class="on">Tiempo real</button><button id="mTest">Pruebas (30 muestras)</button><button id="bPause">Pausar</button><button id="bAnimal">Simular animal</button></div>
+<div class="kg">
+<div class="card"><h4>Estado</h4><span id="lvl" class="badge">Nivel 0</span><div id="lvlT" class="sub" style="margin-top:6px">Zona segura</div></div>
+<div class="card"><h4>Distancia (cm)</h4><div class="big" id="kD">--</div></div>
+<div class="card"><h4>Sensor PIR</h4><div class="big" id="kP">--</div></div>
+<div class="card"><h4>Respuesta (ms)</h4><div class="big" id="kR">--</div></div>
+</div>
+<div class="card"><h4 id="t1">Distancia del sensor ultrasónico</h4><div class="ch"><canvas id="c1"></canvas></div></div>
+<div class="two">
+<div class="card"><h4>Eventos por nivel</h4><div class="ch"><canvas id="c2"></canvas></div></div>
+<div class="card"><h4>Detecciones correctas vs falsas</h4><div class="ch"><canvas id="c3"></canvas></div></div>
+</div>
+<div class="card"><h4>Registro de eventos</h4><ul id="log"></ul></div>
+<p class="sub">Umbrales: Nivel 1 a 150 cm o menos · Nivel 2 a 60 cm o menos.</p>
+</div></section>
+
+<section id="contacto" style="background:var(--card);border-top:1px solid var(--bd)"><div class="wrap">
+<div class="rv"><span class="eb">Contacto</span><h2>Hablemos del proyecto</h2>
+<p class="lead">Proyecto académico de Ingeniería Mecatrónica, Universidad Manuela Beltrán · Circuitos Eléctricos.</p></div>
+<div class="two" style="margin-top:0">
+<div class="card"><h4>Equipo</h4>
+<div class="team">
+<div class="pp"><span class="av">LA</span>Laura Daniela Aguilar</div><div class="pp"><span class="av">OV</span>Oscar Santiago Vargas</div>
+<div class="pp"><span class="av">DZ</span>Daniel Zequeda</div><div class="pp"><span class="av">AP</span>Alejandro Adrian Pachón</div>
+</div>
+<h4>Docente</h4><p style="margin:0 0 14px;font-weight:600">Marta Elisa Cuasquer Mora</p>
+<h4>Correo</h4><a id="mail" style="color:var(--acc);font-weight:700" href="#"></a></div>
+<div class="card"><h4>Escríbenos</h4>
+<input id="fn" placeholder="Tu nombre"><input id="fe" type="email" placeholder="Tu correo"><textarea id="fm" rows="4" placeholder="Tu mensaje"></textarea>
+<button class="btn b3" style="margin:0" onclick="sendMail()">Enviar mensaje</button></div>
+</div></div></section>
+</main>
+<footer><div class="wrap"><div><b>AGROFENCE</b><br>Sistema automatizado basado en PLC para la detección y alerta de intrusión de animales en zonas agrícolas.</div><div>Universidad Manuela Beltrán<br>Ingeniería Mecatrónica · 2026<br>Demostración académica: su uso en finca real requiere validaciones adicionales.</div></div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+var CONTACT_EMAIL='tu-correo@ejemplo.com'; // CAMBIA ESTE CORREO
+var API_URL=''; // URL JSON de tu sistema real: {"distancia":120,"pir":true,"respuesta_ms":150}
+var $=function(i){return document.getElementById(i)};
+$('mail').textContent=CONTACT_EMAIL;$('mail').href='mailto:'+CONTACT_EMAIL;
+function sendMail(){var b='Nombre: '+$('fn').value+'\nCorreo: '+$('fe').value+'\n\n'+$('fm').value;location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('Contacto AgroFence')+'&body='+encodeURIComponent(b)}
+/* reveal */
+(function(){var e=document.querySelectorAll('.rv');if(!('IntersectionObserver' in window)){e.forEach(function(x){x.classList.add('in')});return}
+var o=new IntersectionObserver(function(a){a.forEach(function(i){if(i.isIntersecting){i.target.classList.add('in');o.unobserve(i.target)}})},{threshold:.12});e.forEach(function(x){o.observe(x)})})();
+/* demo */
+var dem={raf:0,s:0};
+var dtxt=['Nivel 0 · Zona segura: el animal está lejos.','Nivel 1 · Advertencia: aproximación detectada, se activa la señal visual.','Nivel 2 · Intrusión: alarma sonora y notificación local.'];
+function setDemo(l){
+ $('dtx').textContent=dtxt[l];
+ for(var i=0;i<3;i++)$('l'+i).className='led'+(i===l?' on':'');
+ $('bz').className='led'+(l===2?' on blink':'');
+ var up=l===0?1:l===1?4:5,st=document.querySelectorAll('.step');
+ for(var j=0;j<st.length;j++)st[j].className='step'+(j<up?' on':'');
+}
+function playDemo(){
+ cancelAnimationFrame(dem.raf);dem.s=0;
+ function f(ts){if(!dem.s)dem.s=ts;var p=Math.min((ts-dem.s)/9000,1),x=640-250*p;
+  $('an').setAttribute('cx',x);$('an2').setAttribute('cx',x-20);
+  setDemo(x<=510?2:x<=600?1:0);if(p<1)dem.raf=requestAnimationFrame(f)}
+ dem.raf=requestAnimationFrame(f);
+}
+setDemo(0);
+/* panel */
+var T1=150,T2=60,N=40,cs=getComputedStyle(document.documentElement);
+function col(v){return cs.getPropertyValue(v).trim()}
+var C={g:col('--g'),o:col('--o'),r:col('--r'),pri:col('--acc'),mut:col('--mut'),bd:col('--bd')};
+Chart.defaults.color=C.mut;Chart.defaults.borderColor=C.bd;Chart.defaults.maintainAspectRatio=false;Chart.defaults.font.family='Manrope,system-ui,sans-serif';
+var labels=[],dist=[],ev=[0,0,0],ok=[0,0];
+var ch1=new Chart($('c1'),{type:'line',data:{labels:labels,datasets:[{label:'Distancia',data:dist,borderColor:C.pri,backgroundColor:'rgba(29,95,224,.12)',fill:true,tension:.35,pointRadius:0,borderWidth:2.5},{label:'Nivel 1',data:[],borderColor:C.o,borderDash:[6,4],pointRadius:0,borderWidth:1.5},{label:'Nivel 2',data:[],borderColor:C.r,borderDash:[6,4],pointRadius:0,borderWidth:1.5}]},options:{animation:false,scales:{y:{min:0,max:350}}}});
+var ch2=new Chart($('c2'),{type:'bar',data:{labels:['Nivel 0','Nivel 1','Nivel 2'],datasets:[{data:ev,backgroundColor:[C.g,C.o,C.r],borderRadius:8}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+var ch3=new Chart($('c3'),{type:'doughnut',data:{labels:['Correctas','Falsas'],datasets:[{data:ok,backgroundColor:[C.g,C.r],borderWidth:0}]},options:{cutout:'68%'}});
+var mode='live',paused=false,lvl=0,t=0,animal=0,timer=null;
+function level(d){return d<=T2?2:d<=T1?1:0}
+var names=['Zona segura','Advertencia: aproximación','Intrusión: alarma activa'],colors=[C.g,C.o,C.r];
+function setLvl(l){$('lvl').textContent='Nivel '+l;$('lvl').style.background=colors[l];$('lvlT').textContent=names[l]}
+function log(m){var li=document.createElement('li');li.textContent=new Date().toLocaleTimeString('es-CO')+' · '+m;$('log').prepend(li);while($('log').children.length>30)$('log').lastChild.remove()}
+function refresh(){ch1.data.datasets[1].data=labels.map(function(){return T1});ch1.data.datasets[2].data=labels.map(function(){return T2});ch1.update();ch2.update();ch3.update()}
+function step(d,pir,r){
+ var l=level(d);
+ labels.push(t);dist.push(d);if(dist.length>N){labels.shift();dist.shift()}
+ $('kD').textContent=d;$('kP').textContent=pir?'Movimiento':'Sin mov.';
+ if(l!==lvl){r=r||Math.round(80+Math.random()*140);$('kR').textContent=r;ev[l]++;
+  if(l>0&&!API_URL){ok[Math.random()<0.9?0:1]++}
+  log('Cambio a Nivel '+l+' ('+d+' cm, '+r+' ms)');lvl=l;setLvl(l)}
+ refresh();
+}
+function tick(){
+ if(paused)return;t++;
+ if(API_URL){fetch(API_URL).then(function(x){return x.json()}).then(function(j){step(j.distancia,j.pir,j.respuesta_ms)}).catch(function(){log('Sin conexión con el sistema')});return}
+ var d;
+ if(animal>0){animal--;d=Math.max(25,300-(30-animal)*10+Math.random()*10)}
+ else d=260+Math.random()*80;
+ if(animal===0&&Math.random()<0.015)animal=30;
+ d=Math.round(d);
+ step(d,d<200&&Math.random()>0.25);
+}
+function startLive(){mode='live';$('liveTag').style.display='';$('t1').textContent='Distancia del sensor ultrasónico';labels.length=0;dist.length=0;ev[0]=ev[1]=ev[2]=0;ok[0]=ok[1]=0;$('log').innerHTML='';lvl=0;setLvl(0);t=0;clearInterval(timer);timer=setInterval(tick,1000);tick();$('mLive').className='on';$('mTest').className='';$('bAnimal').style.display=$('bPause').style.display=''}
+function startTest(){
+ mode='test';$('liveTag').style.display='none';clearInterval(timer);$('mLive').className='';$('mTest').className='on';$('bAnimal').style.display=$('bPause').style.display='none';
+ $('t1').textContent='Distancia de detección por prueba (30 muestras de ejemplo)';
+ labels.length=0;dist.length=0;ev[0]=ev[1]=ev[2]=0;$('log').innerHTML='';
+ var s=7;function rnd(){s=(s*9301+49297)%233280;return s/233280}
+ var rs=[];
+ for(var i=1;i<=30;i++){var k=i%3,d=k===0?Math.round(280+rnd()*60):k===1?Math.round(70+rnd()*80):Math.round(25+rnd()*35);labels.push(i);dist.push(d);ev[level(d)]++;rs.push(Math.round(80+rnd()*140))}
+ ok[0]=27;ok[1]=3;
+ var m=Math.round(rs.reduce(function(a,b){return a+b})/30);
+ $('kD').textContent=Math.round(dist.reduce(function(a,b){return a+b})/30)+' prom.';$('kP').textContent='n = 30';$('kR').textContent=m+' prom.';
+ $('lvl').textContent='Pruebas';$('lvl').style.background=C.pri;$('lvlT').textContent='Datos de ejemplo';
+ log('Falsas activaciones: 3 de 30 (10 %)');log('Tiempo de respuesta promedio: '+m+' ms');
+ refresh();
+}
+$('mLive').onclick=startLive;$('mTest').onclick=startTest;
+$('bPause').onclick=function(){paused=!paused;this.textContent=paused?'Reanudar':'Pausar'};
+$('bAnimal').onclick=function(){if(mode==='live')animal=30};
+startLive();
+</script>
+</body>
+</html>
